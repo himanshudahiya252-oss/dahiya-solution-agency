@@ -27,13 +27,27 @@ export default function Footer() {
 
     setStatus('loading');
     try {
-      // Simulate API submission
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Subscriber',
+          email: email,
+          phone: 'N/A',
+          service: 'Newsletter Subscription',
+          message: 'New subscriber signup.',
+          date: new Date().toLocaleString()
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Submission failed');
+
       setStatus('success');
       setEmail('');
     } catch (err) {
       setStatus('error');
-      setErrorMessage('Something went wrong. Please try again.');
+      setErrorMessage(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     }
   };
 

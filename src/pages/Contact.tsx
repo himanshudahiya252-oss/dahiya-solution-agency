@@ -54,29 +54,26 @@ export default function ContactPage() {
     }
 
     setStatus('loading');
+    setErrorMessage('');
 
     try {
-      // Simulate network request
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: fullName,
+          email: email,
+          phone: '',
+          service: inquiryType,
+          message: details,
+          date: new Date().toLocaleString()
+        })
+      });
 
-      // Build lead payload
-      const newLead = {
-        id: `L-${Math.floor(1000 + Math.random() * 9000)}`,
-        name: fullName,
-        company: company.trim() || 'N/A',
-        email: email.trim(),
-        status: 'Pending',
-        value: inquiryType === 'web' ? '$15,000' : inquiryType === 'mobile' ? '$25,000' : inquiryType === 'marketing' ? '$5,000' : inquiryType === 'ai' ? '$30,000' : '$10,000',
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-      };
+      const data = await response.json();
 
-      // Retrieve existing crm leads from localStorage
-      const existingLeadsStr = localStorage.getItem('ds_crm_leads');
-      const existingLeads = existingLeadsStr ? JSON.parse(existingLeadsStr) : [];
-      existingLeads.unshift(newLead);
-      localStorage.setItem('ds_crm_leads', JSON.stringify(existingLeads));
+      if (!response.ok) throw new Error(data.error || 'Submission failed');
 
-      // Reset Form and set success status
       setInquiryType('');
       setFullName('');
       setCompany('');
@@ -85,7 +82,7 @@ export default function ContactPage() {
       setStatus('success');
     } catch (err) {
       setStatus('error');
-      setErrorMessage('Could not submit inquiry. Please try again.');
+      setErrorMessage(err instanceof Error ? err.message : 'Failed to send enquiry. Please try again.');
     }
   };
 

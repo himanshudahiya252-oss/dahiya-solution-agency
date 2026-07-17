@@ -125,7 +125,9 @@ export default function ProcessGalleryContact() {
         body: JSON.stringify(payload)
       });
 
-      if (!response.ok) throw new Error('Submission failed');
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Submission failed');
       
       setIsSent(true);
       setContactName('');
@@ -138,7 +140,7 @@ export default function ProcessGalleryContact() {
         setIsSent(false);
       }, 4000);
     } catch (err) {
-      setError('Failed to send enquiry. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to send enquiry. Please try again.');
     } finally {
       setIsLoading(false);
     }
