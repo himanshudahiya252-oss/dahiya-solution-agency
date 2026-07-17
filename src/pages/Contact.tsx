@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { ArrowRight, Mail, MapPin, Phone, MessageCircle, Clock, Check, AlertCircle } from 'lucide-react';
 import MagneticButton from '../components/MagneticButton';
 import { useSettings } from '../context/SettingsContext';
+import emailjs from '@emailjs/browser';
 
 export default function ContactPage() {
   const { settings } = useSettings();
@@ -12,6 +13,7 @@ export default function ContactPage() {
   const [fullName, setFullName] = useState('');
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [details, setDetails] = useState('');
   
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -57,32 +59,30 @@ export default function ContactPage() {
     setErrorMessage('');
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      await emailjs.send(
+        'service_9edfe1f',
+        'template_qzlwkwh',
+        {
           name: fullName,
           email: email,
-          phone: '',
-          service: inquiryType,
+          phone: phone,
           message: details,
+          service: inquiryType,
           date: new Date().toLocaleString()
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.error || 'Submission failed');
+        },
+        'N1WywWlDD9kJZRJTY'
+      );
 
       setInquiryType('');
       setFullName('');
       setCompany('');
       setEmail('');
+      setPhone('');
       setDetails('');
       setStatus('success');
     } catch (err) {
       setStatus('error');
-      setErrorMessage(err instanceof Error ? err.message : 'Failed to send enquiry. Please try again.');
+      setErrorMessage('Failed to send enquiry. Please try again.');
     }
   };
 
@@ -154,7 +154,6 @@ export default function ContactPage() {
                 <div className="absolute inset-0 bg-ds-graphite/50" />
                 <div className="relative z-10 flex flex-col sm:flex-row gap-6 items-center">
                   <div className="w-full sm:w-1/2 aspect-square sm:aspect-auto sm:h-32 rounded-2xl overflow-hidden bg-ds-black relative">
-                    {/* Simulated Map */}
                     <div className="absolute inset-0 opacity-50 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                       <MapPin size={24} className="text-ds-blue" />
@@ -176,7 +175,6 @@ export default function ContactPage() {
                   </div>
                 </div>
               </div>
-
             </div>
 
             {/* Right Col: Form */}
@@ -239,18 +237,33 @@ export default function ContactPage() {
                   </div>
                 </div>
                 
-                <div>
-                  <label className="block text-xs font-mono uppercase tracking-widest text-ds-smoke mb-2 ml-4">Email Address</label>
-                  <input 
-                    type="email" 
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (status === 'error') setStatus('idle');
-                    }}
-                    disabled={status === 'loading'}
-                    className="w-full bg-ds-black/50 border border-white/10 rounded-full px-6 py-4 text-ds-white focus:outline-none focus:border-white/30 transition-colors disabled:opacity-55" 
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-widest text-ds-smoke mb-2 ml-4">Email Address</label>
+                    <input 
+                      type="email" 
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (status === 'error') setStatus('idle');
+                      }}
+                      disabled={status === 'loading'}
+                      className="w-full bg-ds-black/50 border border-white/10 rounded-full px-6 py-4 text-ds-white focus:outline-none focus:border-white/30 transition-colors disabled:opacity-55" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-widest text-ds-smoke mb-2 ml-4">Phone Number</label>
+                    <input 
+                      type="tel" 
+                      value={phone}
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                        if (status === 'error') setStatus('idle');
+                      }}
+                      disabled={status === 'loading'}
+                      className="w-full bg-ds-black/50 border border-white/10 rounded-full px-6 py-4 text-ds-white focus:outline-none focus:border-white/30 transition-colors disabled:opacity-55" 
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -277,7 +290,7 @@ export default function ContactPage() {
                     <Check className="text-emerald-400 shrink-0 mt-0.5" size={18} />
                     <div>
                       <div className="font-semibold text-emerald-400 text-sm">Consultation Requested</div>
-                      <div className="text-xs text-emerald-500/80 mt-1">Thank you! Your request has been securely submitted. A senior advisor will contact you within 24 business hours.</div>
+                      <div className="text-xs text-emerald-500/80 mt-1">Thank you. Your enquiry has been submitted successfully.</div>
                     </div>
                   </motion.div>
                 )}
@@ -304,7 +317,6 @@ export default function ContactPage() {
                 </MagneticButton>
               </form>
             </motion.div>
-
           </div>
         </div>
       </section>

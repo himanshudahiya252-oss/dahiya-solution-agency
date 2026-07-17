@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight, Github, Twitter, Linkedin, Instagram, Mail, Check, AlertCircle } from 'lucide-react';
 import MagneticButton from './MagneticButton';
 import { useSettings } from '../context/SettingsContext';
+import emailjs from '@emailjs/browser';
 
 export default function Footer() {
   const { settings } = useSettings();
@@ -27,27 +28,25 @@ export default function Footer() {
 
     setStatus('loading');
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      await emailjs.send(
+        'service_9edfe1f',
+        'template_qzlwkwh',
+        {
           name: 'Subscriber',
           email: email,
           phone: 'N/A',
-          service: 'Newsletter Subscription',
           message: 'New subscriber signup.',
+          service: 'Newsletter Subscription',
           date: new Date().toLocaleString()
-        })
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Submission failed');
+        },
+        'N1WywWlDD9kJZRJTY'
+      );
 
       setStatus('success');
       setEmail('');
     } catch (err) {
       setStatus('error');
-      setErrorMessage(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setErrorMessage('Something went wrong. Please try again.');
     }
   };
 

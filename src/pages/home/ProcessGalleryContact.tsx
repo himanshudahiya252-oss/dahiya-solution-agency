@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Card, Button } from '../../components/ui';
 import { useSettings } from '../../context/SettingsContext';
+import emailjs from '@emailjs/browser';
 
 // Office / tech workspaces image sources
 import marketingImg from '../../assets/images/marketing_dashboard_1784273747900.jpg';
@@ -109,25 +110,20 @@ export default function ProcessGalleryContact() {
     setIsLoading(true);
     setError('');
 
-    const payload = {
-      name: contactName,
-      email: contactEmail,
-      phone: contactPhone,
-      service: contactService,
-      message: contactMessage,
-      date: new Date().toLocaleString()
-    };
-
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.error || 'Submission failed');
+      await emailjs.send(
+        'service_9edfe1f',
+        'template_qzlwkwh',
+        {
+          name: contactName,
+          email: contactEmail,
+          phone: contactPhone,
+          message: contactMessage,
+          service: contactService,
+          date: new Date().toLocaleString()
+        },
+        'N1WywWlDD9kJZRJTY'
+      );
       
       setIsSent(true);
       setContactName('');
@@ -140,7 +136,7 @@ export default function ProcessGalleryContact() {
         setIsSent(false);
       }, 4000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send enquiry. Please try again.');
+      setError('Failed to send enquiry. Please try again.');
     } finally {
       setIsLoading(false);
     }
