@@ -20,8 +20,8 @@ const defaultSettings: BusinessSettings = {
   certificateSignatoryName: 'Sahil Dahiya',
   certificateSignatoryDesignation: 'CEO',
   contactEmail: 'contact@dahiyasolution.com',
-  contactPhone: '+91 99999 99999',
-  contactAddress: 'Dahiya Mansion, New Delhi, India'
+  contactPhone: '+91 9992618109',
+  contactAddress: 'Dahiya Town, Devilal Colony, Mahendragarh, Haryana, 123029, India'
 };
 
 interface SettingsContextType {
