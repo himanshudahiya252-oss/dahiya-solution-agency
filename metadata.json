@@ -1,0 +1,6 @@
+{
+  "name": "Dahiya Solution",
+  "description": "Premium AI-first digital agency focused on modern technology, strategy, and design.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
